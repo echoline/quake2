@@ -1,0 +1,64 @@
+apply plugin: 'com.android.application'
+
+buildscript {
+    repositories {
+        jcenter()
+        google()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.0.1'
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+        google()
+    }
+}
+
+android {
+    compileSdkVersion 27
+    defaultConfig {
+        applicationId "org.echoline.quake2"
+        minSdkVersion 19
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.0"
+        externalNativeBuild {
+            cmake {
+                cppFlags "-std=gnu++11"
+                arguments "-DGVR_LIBPATH=/home/eli/gvr-android-sdk-1.140.0/libraries/jni",
+                          "-DGVR_INCLUDE=/home/eli/gvr-android-sdk-1.140.0/libraries/headers"
+            }
+        }
+        buildTypes {
+            release {
+                minifyEnabled = true
+                proguardFiles.add(file("/home/eli/gvr-android-sdk-1.140.0/proguard-gvr.txt"))
+            }
+        }
+        ndk {
+            // This sample builds all architectures by default. Note that if you
+            // only want to build for a specific architecture, you need to
+            // remove the appropriate lines below. You also need to remove the
+            // .so files from the apk using
+            // "packagingOptions {exclude('lib/armeabi-v7a/*')}" in the android
+            // section.
+            abiFilters "arm64-v8a"
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path "CMakeLists.txt"
+        }
+    }
+}
+
+
+dependencies {
+    compile 'com.google.vr:sdk-audio:1.140.0'
+    compile 'com.google.vr:sdk-base:1.140.0'
+}
+
+build.dependsOn(':extractNdk')
